@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>⚔ Kingdom of Lords</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
+        url("https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1200&auto=format&fit=crop");
+    background-size:cover;
+    background-position:center;
+    min-height:100vh;
+    font-family:'Cinzel', serif;
+    color:#f5deb3;
+    display:flex;
+    justify-content:center;
+    padding:12px;
+}
+
+.game{
+    width:100%;
+    max-width:480px;
+    background:rgba(20,12,8,0.92);
+    border:4px solid #8b5a2b;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.8),
+        inset 0 0 30px rgba(255,215,0,0.08);
+}
+
+.header{
+    text-align:center;
+    padding:20px;
+    background:linear-gradient(to bottom,#5c2f0d,#2e1408);
+    border-bottom:3px solid #8b5a2b;
+}
+
+.header h1{
+    font-family:'MedievalSharp', cursive;
+    font-size:2rem;
+    color:#ffd700;
+    text-shadow:2px 2px 6px black;
+}
+
+.subtitle{
+    margin-top:6px;
+    font-size:0.9rem;
+    opacity:0.8;
+}
+
+.kingdom-image{
+    width:100%;
+    height:180px;
+    background:
+        linear-gradient(rgba(0,0,0,0.1),rgba(0,0,0,0.4)),
+        url("images2.jpg");
+    background-size:cover;
+    background-position:center;
+    border-bottom:3px solid #8b5a2b;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:14px;
+}
+
+.stat{
+    background:linear-gradient(to bottom,#3d2415,#24130a);
+    border:2px solid #8b5a2b;
+    border-radius:18px;
+    padding:12px;
+    text-align:center;
+    box-shadow:inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.stat-title{
+    font-size:0.8rem;
+    opacity:0.8;
+}
+
+.stat-value{
+    margin-top:6px;
+    font-size:1.4rem;
+    color:#ffd700;
+    font-weight:bold;
+}
+
+.section-title{
+    padding:0 14px;
+    margin-top:10px;
+    margin-bottom:10px;
+    color:#ffd700;
+    font-size:1.1rem;
+}
+
+.actions{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding:0 14px 14px;
+}
+
+.card{
+    background:linear-gradient(to bottom,#4b2d19,#2b160d);
+    border:2px solid #8b5a2b;
+    border-radius:18px;
+    padding:14px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
+}
+
+.card h3{
+    color:#ffd700;
+    margin-bottom:8px;
+}
+
+.card p{
+    font-size:0.85rem;
+    opacity:0.9;
+    margin-bottom:4px;
+}
+
+button{
+    width:100%;
+    margin-top:12px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    font-family:'Cinzel', serif;
+    font-weight:bold;
+    font-size:1rem;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.house-btn{
+    background:linear-gradient(to bottom,#16a34a,#166534);
+    color:white;
+}
+
+.market-btn{
+    background:linear-gradient(to bottom,#ca8a04,#854d0e);
+    color:white;
+}
+
+.soldier-btn{
+    background:linear-gradient(to bottom,#b91c1c,#7f1d1d);
+    color:white;
+}
+
+.turn-btn{
+    margin:14px;
+    background:linear-gradient(to bottom,#2563eb,#1e3a8a);
+    color:white;
+    font-size:1.1rem;
+    padding:16px;
+}
+
+.log-container{
+    padding:14px;
+}
+
+.log{
+    height:220px;
+    overflow-y:auto;
+    background:black;
+    border:2px solid #8b5a2b;
+    border-radius:16px;
+    padding:12px;
+    font-size:0.9rem;
+}
+
+.log-entry{
+    margin-bottom:10px;
+    line-height:1.4;
+}
+
+.green{
+    color:#4ade80;
+}
+
+.red{
+    color:#f87171;
+}
+
+.yellow{
+    color:#facc15;
+}
+
+@media (max-width:420px){
+
+    .header h1{
+        font-size:1.6rem;
+    }
+
+    .stat-value{
+        font-size:1.2rem;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="game">
+
+    <div class="header">
+        <h1>⚔ Kingdom of Lords ⚔</h1>
+        <div class="subtitle">Rule your medieval lands</div>
+    </div>
+
+    <div class="kingdom-image"></div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-title">💰 Gold</div>
+            <div class="stat-value" id="gold">120</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">🏘 Houses</div>
+            <div class="stat-value" id="houses">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">🛒 Markets</div>
+            <div class="stat-value" id="markets">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">⚔ Soldiers</div>
+            <div class="stat-value" id="soldiers">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">👨 Population</div>
+            <div class="stat-value" id="population">8</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">📅 Turn</div>
+            <div class="stat-value" id="turn">1</div>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">🏰 Kingdom Actions</h2>
+
+    <div class="actions">
+
+        <div class="card">
+            <h3>🏠 Build House</h3>
+            <p>Cost: 20 Gold</p>
+            <p>+5 Gold per turn</p>
+            <p>+2 Population</p>
+
+            <button class="house-btn" onclick="buildHouse()">
+                Build House
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>🛒 Build Market</h3>
+            <p>Cost: 40 Gold</p>
+            <p>+12 Gold per turn</p>
+
+            <button class="market-btn" onclick="buildMarket()">
+                Build Market
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>⚔ Recruit Soldiers</h3>
+            <p>Cost: 15 Gold</p>
+            <p>Protect the kingdom from invasions</p>
+
+            <button class="soldier-btn" onclick="recruitSoldier()">
+                Recruit Soldier
+            </button>
+        </div>
+
+    </div>
+
+    <button class="turn-btn" onclick="nextTurn()">
+        ⏭ End Turn
+    </button>
+
+    <div class="log-container">
+
+        <h2 class="section-title">📜 Kingdom Chronicle</h2>
+
+        <div class="log" id="log"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+class Kingdom {
+
+    constructor(){
+
+        this.gold = 120;
+        this.houses = 0;
+        this.markets = 0;
+        this.soldiers = 0;
+        this.population = 8;
+        this.turn = 1;
+
+    }
+
+    updateUI(){
+
+        document.getElementById("gold").innerText = this.gold;
+        document.getElementById("houses").innerText = this.houses;
+        document.getElementById("markets").innerText = this.markets;
+        document.getElementById("soldiers").innerText = this.soldiers;
+        document.getElementById("population").innerText = this.population;
+        document.getElementById("turn").innerText = this.turn;
+
+    }
+
+    log(message, color=""){
+
+        const log = document.getElementById("log");
+
+        const div = document.createElement("div");
+
+        div.className = `log-entry ${color}`;
+
+        div.innerHTML = message;
+
+        log.prepend(div);
+
+    }
+
+    buildHouse(){
+
+        if(this.gold >= 20){
+
+            this.gold -= 20;
+            this.houses++;
+            this.population += 2;
+
+            this.log("🏠 Villagers built a new house.", "green");
+
+        } else {
+
+            this.log("❌ Not enough gold for a house.", "red");
+
+        }
+
+        this.updateUI();
+
+    }
+
+    buildMarket(){
+
+        if(this.gold >= 40){
+
+            this.gold -= 40;
+            this.markets++;
+
+            this.log("🛒 Merchants opened a market.", "green");
+
+        } else {
+
+            this.log("❌ Not enough gold for a market.", "red");
+
+        }
+
+        this.updateUI();
+
+    }
+
+    recruitSoldier(){
+
+        if(this.gold >= 15){
+
+            this.gold -= 15;
+            this.soldiers++;
+
+            this.log("⚔ A knight joined your army.", "green");
+
+        } else {
+
+            this.log("❌ Not enough gold to recruit.", "red");
+
+        }
+
+        this.updateUI();
+
+    }
+
+    collectTaxes(){
+
+        let income = 0;
+
+        income += this.houses * 5;
+        income += this.markets * 12;
+
+        this.gold += income;
+
+        this.log(`💰 Taxes collected: ${income} gold.`, "yellow");
+
+    }
+
+    invasion(){
+
+        const chance = Math.random();
+
+        if(this.soldiers === 0){
+
+            if(chance < 0.55){
+
+                let destroyedHouses = Math.min(this.houses, Math.floor(Math.random()*2)+1);
+
+                let destroyedMarkets = Math.min(this.markets, Math.floor(Math.random()*2));
+
+                this.houses -= destroyedHouses;
+                this.markets -= destroyedMarkets;
+
+                this.log(
+                    `🔥 Enemy lords invaded your lands and destroyed ${destroyedHouses} houses and ${destroyedMarkets} markets!`,
+                    "red"
+                );
+
+            } else {
+
+                this.log(
+                    "👀 Rival lords observe your weak kingdom...",
+                    "yellow"
+                );
+
+            }
+
+        } else {
+
+            if(chance < 0.3){
+
+                let losses = Math.floor(Math.random()*2)+1;
+
+                this.soldiers = Math.max(0, this.soldiers - losses);
+
+                this.log(
+                    `🛡 Your soldiers defended the kingdom. ${losses} soldiers were lost.`,
+                    "yellow"
+                );
+
+            } else {
+
+                this.log(
+                    "🏰 Peace reigns across the kingdom.",
+                    "green"
+                );
+
+            }
+
+        }
+
+    }
+
+    populationGrowth(){
+
+        if(this.houses > 0){
+
+            const growth = Math.floor(Math.random()*4);
+
+            this.population += growth;
+
+            if(growth > 0){
+
+                this.log(
+                    `👨‍🌾 Population increased by ${growth}.`,
+                    "green"
+                );
+
+            }
+
+        }
+
+    }
+
+    nextTurn(){
+
+        this.turn++;
+
+        this.collectTaxes();
+
+        this.populationGrowth();
+
+        this.invasion();
+
+        if(this.gold <= 0){
+
+            this.log(
+                "💀 The kingdom treasury is empty!",
+                "red"
+            );
+
+        }
+
+        this.updateUI();
+
+    }
+
+}
+
+const kingdom = new Kingdom();
+
+function buildHouse(){
+    kingdom.buildHouse();
+}
+
+function buildMarket(){
+    kingdom.buildMarket();
+}
+
+function recruitSoldier(){
+    kingdom.recruitSoldier();
+}
+
+function nextTurn(){
+    kingdom.nextTurn();
+}
+
+kingdom.updateUI();
+
+kingdom.log(
+    "👑 Welcome, my lord. Your kingdom awaits your command.",
+    "green"
+);
+
+</script>
+
+</body>
+</html>
