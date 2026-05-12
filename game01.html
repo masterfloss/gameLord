@@ -733,6 +733,27 @@ const TECHS = [
     apply: (k) => { k.houseBonus = 3; } },
 ];
 
+const PLAYER_ID = localStorage.getItem("player_id") || crypto.randomUUID();
+localStorage.setItem("player_id", PLAYER_ID);
+
+function sendGameData() {
+  const url =
+    "https://masterfloss.pythonanywhere.com/submit" +
+    "?player=" + encodeURIComponent(PLAYER_ID) +
+    "&score=" + encodeURIComponent(kingdom.score) +
+    "&turn=" + encodeURIComponent(kingdom.turn) +
+    "&gold=" + encodeURIComponent(kingdom.gold) +
+    "&houses=" + encodeURIComponent(kingdom.houses) +
+    "&markets=" + encodeURIComponent(kingdom.markets) +
+    "&soldiers=" + encodeURIComponent(kingdom.soldiers) +
+    "&population=" + encodeURIComponent(kingdom.population) +
+    "&rank=" + encodeURIComponent(kingdom.rank(kingdom.score));
+
+  new Image().src = url;
+}
+
+
+
 class Kingdom {
   constructor() {
     this.reset();
@@ -1029,6 +1050,7 @@ class Kingdom {
 
     if (this.checkVictory()) return;
     this.updateUI();
+    sendGameData();
   }
 }
 
