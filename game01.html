@@ -52,6 +52,40 @@ body {
 }
 .topbar-turn b { color: var(--text); }
 
+
+  .topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.topbar-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,184,48,0.1);
+  border: 1px solid rgba(232,184,48,0.3);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+.topbar-rank .rank-score {
+  color: var(--text-dim);
+  font-weight: 400;
+  border-left: 1px solid rgba(232,184,48,0.25);
+  padding-left: 8px;
+}
+.topbar-rank .rank-score b { color: var(--text); font-weight: 600; }
+.topbar-rank.bump { animation: rankBump 0.6s ease; }
+@keyframes rankBump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); background: rgba(232,184,48,0.3); }
+  100% { transform: scale(1); }
+}
+
 /* ========== TUTORIAL HINT ========== */
 .tutorial {
   background: linear-gradient(135deg, rgba(232,184,48,0.18), rgba(232,184,48,0.06));
@@ -481,10 +515,16 @@ body {
 
 <div class="game">
 
-  <div class="topbar">
-    <div class="topbar-title">♛ Feudal Lord</div>
-    <div class="topbar-turn">Turn <b id="turn-num">1</b> of 30</div>
+<div class="topbar">
+  <div class="topbar-title">
+    ♛ Feudal Lord
+    <span class="topbar-rank" id="rank-badge" title="Your current rank — grows with your score">
+      <span id="rank-name">Peasant Village</span>
+      <span class="rank-score"><b id="score">0</b> pts</span>
+    </span>
   </div>
+  <div class="topbar-turn">Turn <b id="turn-num">1</b> of 30</div>
+</div>
 
   <!-- TUTORIAL -->
   <div class="tutorial" id="tutorial">
@@ -765,6 +805,25 @@ class Kingdom {
 
     // Score (used by overlay)
     this.score = this.computeScore();
+
+    // Rank badge
+const rankName = this.rank(this.score);
+const rankEl = document.getElementById('rank-name');
+const scoreEl = document.getElementById('score');
+const prevRank = rankEl.textContent;
+rankEl.textContent = rankName;
+scoreEl.textContent = this.score;
+if (prevRank && prevRank !== rankName) {
+  const badge = document.getElementById('rank-badge');
+  badge.classList.remove('bump');
+  void badge.offsetWidth;
+  badge.classList.add('bump');
+  this.log(`👑 Your realm rose to: ${rankName}!`, 'gold');
+}
+
+
+
+    
 
     // Tech affordability (factor in pending orders)
     TECHS.forEach(tech => {
