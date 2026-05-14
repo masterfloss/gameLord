@@ -6,739 +6,638 @@
 <title>Feudal Lord</title>
 <style>
 :root {
-  --parchment: #f5ead8;
-  --parchment-dark: #e8d5b0;
-  --ink: #1c1208;
-  --ink-light: #3d2b0e;
-  --blood: #8b1a1a;
-  --blood-light: #c0392b;
-  --gold: #b8860b;
-  --gold-bright: #d4a017;
-  --gold-light: #f0d060;
-  --stone: #6b5b45;
-  --stone-light: #a08060;
-  --forest: #2d5a27;
-  --forest-light: #4a8c42;
-  --shadow: rgba(28,18,8,0.18);
-  --shadow-deep: rgba(28,18,8,0.35);
+  --bg: #14100a;
+  --panel-info: #1a1f28;
+  --panel-info-border: #2d3848;
+  --panel-action: #2a1f10;
+  --panel-action-border: #5a4220;
+  --text: #f0e4cc;
+  --text-dim: #a89b80;
+  --text-faint: #6b5e48;
+  --gold: #e8b830;
+  --gold-dim: #a88420;
+  --green: #7ac46a;
+  --red: #e07060;
+  --blue: #80b0e0;
+  --info-blue: #6090c0;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: #0e0a04;
-  color: var(--ink);
-  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 24px 16px 40px;
-  background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(90,60,20,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(60,30,10,0.4) 0%, transparent 60%);
+  padding: 16px 12px 40px;
+  line-height: 1.5;
 }
+.game { width: 100%; max-width: 780px; }
 
-.game {
-  width: 100%;
-  max-width: 860px;
-}
-
-/* ── HEADER ── */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-  position: relative;
-}
-.header h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: var(--gold-light);
-  text-shadow: 0 2px 12px rgba(180,130,0,0.5), 0 0 40px rgba(180,130,0,0.2);
-  letter-spacing: 0.12em;
-  line-height: 1;
-}
-.header .subtitle {
-  font-family: 'Crimson Pro', serif;
-  font-style: italic;
-  color: var(--stone-light);
-  font-size: 1rem;
-  margin-top: 4px;
-  letter-spacing: 0.05em;
-}
-.crown { font-size: 2rem; display: block; margin-bottom: 4px; filter: drop-shadow(0 2px 8px rgba(180,130,0,0.6)); }
-
-/* ── TURN BANNER ── */
-.turn-banner {
-  background: linear-gradient(90deg, transparent, rgba(184,134,11,0.15) 30%, rgba(184,134,11,0.15) 70%, transparent);
-  border-top: 1px solid rgba(184,134,11,0.4);
-  border-bottom: 1px solid rgba(184,134,11,0.4);
-  text-align: center;
-  padding: 6px 0;
-  margin-bottom: 18px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  color: var(--gold-bright);
-}
-
-/* ── KINGDOM SCORE ── */
-.score-bar {
+/* ========== TOP BAR ========== */
+.topbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background: rgba(245,234,216,0.07);
-  border: 1px solid rgba(184,134,11,0.25);
-  border-radius: 8px;
-  padding: 10px 18px;
-  margin-bottom: 18px;
-  gap: 12px;
-}
-.score-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--stone-light);
-}
-.score-value {
-  font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--gold-bright);
-}
-.score-rank {
-  font-family: 'Crimson Pro', serif;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: var(--parchment);
-}
-.progress-wrap {
-  flex: 1;
-  height: 6px;
-  background: rgba(245,234,216,0.1);
-  border-radius: 3px;
-  overflow: hidden;
-  min-width: 60px;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  border-radius: 3px;
-  transition: width 0.6s ease;
-}
-
-/* ── STATS GRID ── */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  margin-bottom: 18px;
-}
-.stat-card {
-  background: rgba(245,234,216,0.06);
-  border: 1px solid rgba(184,134,11,0.2);
-  border-radius: 8px;
-  padding: 10px 6px;
-  text-align: center;
-  transition: border-color 0.3s, background 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.stat-card.updated::before { opacity: 1; }
-.stat-card.updated { border-color: rgba(184,134,11,0.5); }
-.stat-icon { font-size: 1.1rem; display: block; margin-bottom: 3px; }
-.stat-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  color: var(--stone-light);
-  display: block;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-.stat-value {
-  font-family: 'Cinzel', serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--parchment);
-  transition: color 0.3s;
-}
-.stat-value.gain { color: var(--gold-light); }
-.stat-value.loss { color: #e07070; }
-
-/* ── WIN/LOSS CONDITION BAR ── */
-.objective-bar {
-  background: rgba(245,234,216,0.05);
-  border: 1px solid rgba(184,134,11,0.2);
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-bottom: 18px;
-  display: flex;
   align-items: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.topbar-title { font-size: 1.1rem; font-weight: 600; color: var(--gold); }
+.topbar-turn {
+  background: #2a2418;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.topbar-turn b { color: var(--text); }
+
+/* ========== TUTORIAL HINT ========== */
+.tutorial {
+  background: linear-gradient(135deg, rgba(232,184,48,0.18), rgba(232,184,48,0.06));
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  display: flex;
   gap: 14px;
-  flex-wrap: wrap;
+  align-items: flex-start;
 }
-.obj-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  color: var(--stone-light);
-  white-space: nowrap;
+.tutorial.hidden { display: none; }
+.tutorial-icon { font-size: 1.4rem; }
+.tutorial-body { flex: 1; font-size: 0.92rem; color: var(--text); }
+.tutorial-body b { color: var(--gold); }
+.tutorial-step {
+  font-size: 0.78rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  display: block;
 }
-.obj-goals {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-.obj-goal {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.85rem;
-  color: var(--stone-light);
-  transition: color 0.3s;
-}
-.obj-goal.done { color: var(--forest-light); }
-.obj-goal .chk {
-  width: 14px; height: 14px;
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  transition: background 0.3s;
-}
-.obj-goal.done .chk {
-  background: var(--forest-light);
-  border-color: var(--forest-light);
-  color: white;
-}
-.obj-turns {
-  font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  color: var(--gold-bright);
-  white-space: nowrap;
+.tutorial-close {
+  background: none; border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 4px;
 }
 
-/* ── ACTIONS ── */
-.actions {
+/* ========== SECTION LABELS ========== */
+.section-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  margin: 18px 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::before, .section-label::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: var(--text-faint);
+  opacity: 0.3;
+}
+.section-label::before { max-width: 20px; }
+.section-label.info-tag { color: var(--info-blue); }
+.section-label.info-tag::before, .section-label.info-tag::after { background: var(--info-blue); opacity: 0.4; }
+.section-label.action-tag { color: var(--gold); }
+.section-label.action-tag::before, .section-label.action-tag::after { background: var(--gold); opacity: 0.4; }
+
+/* ========== INFO PANEL — read-only, blue-tinted ========== */
+.info-panel {
+  background: var(--panel-info);
+  border: 1px solid var(--panel-info-border);
+  border-radius: 10px;
+  padding: 18px 14px 14px;
+  position: relative;
+}
+.info-panel::before {
+  content: '👁  YOUR KINGDOM (read-only)';
+  position: absolute;
+  top: -10px; left: 14px;
+  background: var(--bg);
+  padding: 0 8px;
+  font-size: 0.7rem;
+  color: var(--info-blue);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.action-card {
-  background: rgba(245,234,216,0.06);
-  border: 1px solid rgba(184,134,11,0.2);
-  border-radius: 10px;
-  padding: 14px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: relative;
-  transition: border-color 0.2s;
-}
-.action-card:not(.disabled):hover {
-  border-color: rgba(184,134,11,0.5);
-}
-.action-card.disabled {
-  opacity: 0.45;
-}
-.action-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--parchment);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.action-icon { font-size: 1.1rem; }
-.action-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.action-stat {
-  font-size: 0.82rem;
-  color: var(--stone-light);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.action-stat span { color: var(--parchment-dark); }
-
-/* Tooltip */
-.tooltip-wrap { position: relative; }
-.tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15,8,2,0.97);
-  border: 1px solid rgba(184,134,11,0.4);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.82rem;
-  color: var(--parchment-dark);
-  width: 200px;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  line-height: 1.45;
-}
-.tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%; left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: rgba(184,134,11,0.4);
-}
-.tooltip-wrap:hover .tooltip { opacity: 1; }
-
-/* Afford insufficient gold */
-.cost-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.72rem;
-  padding: 3px 8px;
-  border-radius: 20px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  transition: background 0.3s, color 0.3s;
-}
-.cost-tag.affordable {
-  background: rgba(184,134,11,0.15);
-  color: var(--gold-bright);
-  border: 1px solid rgba(184,134,11,0.3);
-}
-.cost-tag.unaffordable {
-  background: rgba(139,26,26,0.15);
-  color: #e07070;
-  border: 1px solid rgba(139,26,26,0.3);
-}
-
-.action-btn {
-  width: 100%;
-  padding: 9px;
-  border: none;
-  border-radius: 7px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.action-btn:not(:disabled) {
-  background: linear-gradient(135deg, rgba(184,134,11,0.3), rgba(184,134,11,0.15));
-  border: 1px solid rgba(184,134,11,0.5);
-  color: var(--gold-light);
-}
-.action-btn:not(:disabled):hover {
-  background: linear-gradient(135deg, rgba(184,134,11,0.5), rgba(184,134,11,0.3));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184,134,11,0.2);
-}
-.action-btn:disabled {
-  background: rgba(245,234,216,0.04);
-  border: 1px solid rgba(245,234,216,0.1);
-  color: rgba(245,234,216,0.2);
-  cursor: not-allowed;
-}
-
-/* ── BOTTOM ROW ── */
-.bottom-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  margin-bottom: 14px;
-  align-items: stretch;
-}
-
-/* ── TECH TREE ── */
-.tech-panel {
-  background: rgba(245,234,216,0.05);
-  border: 1px solid rgba(184,134,11,0.2);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.tech-header {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  color: var(--stone-light);
+  gap: 10px;
   margin-bottom: 10px;
 }
-.tech-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.tech-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.tech-btn {
-  flex: 1;
-  padding: 6px 10px;
+.info-cell {
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
   border-radius: 6px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-  text-align: left;
+}
+.info-cell-label {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.info-cell-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.info-cell-value.danger { color: var(--red); }
+.info-cell-value.good { color: var(--green); }
+
+.info-buildings {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+}
+.info-buildings span b { color: var(--text); font-weight: 600; }
+
+/* ========== GOALS ========== */
+.goals-panel {
+  background: var(--panel-info);
+  border: 1px solid var(--panel-info-border);
+  border-radius: 10px;
+  padding: 18px 14px 14px;
+  margin-top: 10px;
+  position: relative;
+}
+.goals-panel::before {
+  content: '🎯  HOW TO WIN (achieve all 4)';
+  position: absolute;
+  top: -10px; left: 14px;
+  background: var(--bg);
+  padding: 0 8px;
+  font-size: 0.7rem;
+  color: var(--info-blue);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 18px;
+}
+.goal {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  gap: 10px;
+  font-size: 0.9rem;
 }
-.tech-btn:not(:disabled):not(.researched) {
-  background: rgba(45,90,39,0.15);
-  border: 1px solid rgba(74,140,66,0.3);
-  color: var(--forest-light);
+.goal-mark {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--text-faint);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  color: transparent;
+  flex-shrink: 0;
 }
-.tech-btn:not(:disabled):not(.researched):hover {
-  background: rgba(45,90,39,0.3);
-}
-.tech-btn:disabled:not(.researched) {
-  background: rgba(245,234,216,0.03);
-  border: 1px solid rgba(245,234,216,0.08);
-  color: rgba(245,234,216,0.2);
-  cursor: not-allowed;
-}
-.tech-btn.researched {
-  background: rgba(45,90,39,0.25);
-  border: 1px solid rgba(74,140,66,0.5);
-  color: var(--forest-light);
-  cursor: default;
-}
-.tech-cost { font-size: 0.65rem; opacity: 0.75; white-space: nowrap; }
+.goal.done .goal-mark { background: var(--green); border-color: var(--green); color: var(--bg); }
+.goal-text { color: var(--text-dim); }
+.goal-text b { color: var(--text); }
+.goal.done .goal-text { color: var(--text-faint); }
+.goal-prog { color: var(--text-faint); font-size: 0.84rem; margin-left: auto; }
 
-/* ── END TURN BUTTON ── */
-.end-turn-btn {
-  padding: 0 28px;
-  border: none;
+/* ========== ACTION PANEL — editable, gold-tinted ========== */
+.action-panel {
+  background: var(--panel-action);
+  border: 2px solid var(--panel-action-border);
   border-radius: 10px;
-  background: linear-gradient(135deg, rgba(139,26,26,0.5), rgba(100,15,15,0.4));
-  border: 1px solid rgba(139,26,26,0.6);
-  color: #f0a0a0;
-  font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  padding: 18px 14px 14px;
+  position: relative;
 }
-.end-turn-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(192,57,43,0.6), rgba(139,26,26,0.5));
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(139,26,26,0.3);
-}
-.end-turn-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* ── LOG ── */
-.log-header {
-  font-family: 'Cinzel', serif;
+.action-panel::before {
+  content: '✋  YOUR ORDERS THIS TURN (you decide)';
+  position: absolute;
+  top: -10px; left: 14px;
+  background: var(--bg);
+  padding: 0 8px;
   font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  color: var(--stone-light);
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.action-help {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.action-help b { color: var(--gold); font-style: normal; }
+
+.order {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
   margin-bottom: 8px;
 }
-.log {
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(184,134,11,0.15);
-  border-radius: 10px;
-  height: 220px;
-  overflow-y: auto;
-  padding: 12px 14px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(184,134,11,0.3) transparent;
-}
-.log-entry {
-  display: flex;
-  gap: 8px;
-  padding: 5px 0;
-  border-bottom: 1px solid rgba(245,234,216,0.04);
-  font-size: 0.88rem;
-  line-height: 1.4;
-  animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-.log-turn {
-  font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  color: var(--stone-light);
-  min-width: 42px;
-  padding-top: 2px;
-  opacity: 0.7;
-}
-.log-text { flex: 1; }
-.log-text.green { color: #8fcc80; }
-.log-text.red { color: #e07070; }
-.log-text.yellow { color: #e0c060; }
-.log-text.blue { color: #80b0e0; }
+.order-info { display: flex; align-items: center; gap: 12px; }
+.order-icon { font-size: 1.6rem; width: 36px; text-align: center; }
+.order-text { flex: 1; }
+.order-name { font-size: 0.98rem; font-weight: 600; color: var(--text); }
+.order-desc { font-size: 0.82rem; color: var(--text-dim); }
+.order-desc b { color: var(--gold); }
+.order-price { font-size: 0.8rem; color: var(--gold-dim); margin-top: 3px; }
 
-/* ── OVERLAYS ── */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
+.stepper {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0;
+  background: rgba(0,0,0,0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--panel-action-border);
+}
+.stepper button {
+  width: 36px; height: 36px;
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+.stepper button:hover:not(:disabled) { background: rgba(232,184,48,0.2); }
+.stepper button:disabled { color: var(--text-faint); cursor: not-allowed; }
+.stepper .count {
+  min-width: 36px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0 4px;
+}
+.stepper .count.zero { color: var(--text-faint); }
+
+/* ========== SUMMARY + CONFIRM ========== */
+.summary {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  border: 1px dashed var(--gold-dim);
+  transition: border-color 0.3s;
+}
+.summary-title {
+  font-size: 0.78rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.summary-lines {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+.summary-lines .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+.summary-lines .row b { color: var(--text); font-weight: 500; }
+.summary-lines .row.total {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--panel-action-border);
+  color: var(--text);
+}
+.summary-lines .row.total b { color: var(--gold); }
+
+.confirm-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #c08020, #a06010);
+  border: none;
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: all 0.15s;
+}
+.confirm-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d49030, #b07018);
+  transform: translateY(-1px);
+}
+.confirm-btn:disabled {
+  background: #3a2d1a;
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+.confirm-btn small { display: block; font-size: 0.78rem; font-weight: 400; opacity: 0.85; margin-top: 2px; }
+
+/* ========== ADVANCED (techs) ========== */
+.advanced { margin-top: 14px; }
+.advanced summary {
+  cursor: pointer;
+  padding: 10px 14px;
+  background: var(--panel-info);
+  border: 1px solid var(--panel-info-border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  list-style: none;
+}
+.advanced summary::-webkit-details-marker { display: none; }
+.advanced[open] summary { border-radius: 8px 8px 0 0; }
+.advanced-content {
+  border: 1px solid var(--panel-info-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 4px 14px;
+  background: var(--panel-info);
+}
+.tech-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.tech-row:last-child { border-bottom: none; }
+.tech-info .t-name { color: var(--text); font-size: 0.9rem; font-weight: 500; }
+.tech-info .t-eff { color: var(--text-dim); font-size: 0.82rem; }
+.tech-btn {
+  padding: 7px 14px;
+  background: rgba(122,196,106,0.1);
+  border: 1px solid rgba(122,196,106,0.4);
+  color: var(--green);
+  border-radius: 7px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.tech-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.tech-btn.done { background: rgba(122,196,106,0.2); cursor: default; }
+
+/* ========== LOG ========== */
+.log-wrap {
+  margin-top: 10px;
+  background: var(--panel-info);
+  border: 1px solid var(--panel-info-border);
+  border-radius: 8px;
+}
+.log-wrap summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  list-style: none;
+}
+.log-wrap summary::-webkit-details-marker { display: none; }
+.log {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 4px 14px 12px;
+}
+.log-entry {
+  font-size: 0.86rem;
+  padding: 4px 0;
+  color: var(--text-dim);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.log-entry b { color: var(--text-faint); font-weight: 500; margin-right: 8px; font-variant-numeric: tabular-nums; }
+.log-entry.green { color: var(--green); }
+.log-entry.red { color: var(--red); }
+.log-entry.gold { color: var(--gold); }
+.log-entry.blue { color: var(--blue); }
+
+/* ========== OVERLAY ========== */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
   z-index: 200;
-  backdrop-filter: blur(4px);
 }
 .overlay.hidden { display: none; }
 .overlay-box {
-  background: #1a1005;
-  border: 2px solid rgba(184,134,11,0.5);
-  border-radius: 14px;
-  padding: 36px 40px;
+  background: var(--panel-info);
+  border: 1px solid var(--panel-info-border);
+  border-radius: 12px;
+  padding: 30px;
   text-align: center;
-  max-width: 420px;
+  max-width: 380px;
   width: 90%;
 }
-.overlay-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
-.overlay-title {
-  font-family: 'Cinzel', serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-.overlay-title.victory { color: var(--gold-light); }
-.overlay-title.defeat { color: #e07070; }
-.overlay-body {
-  font-family: 'Crimson Pro', serif;
-  font-size: 1rem;
-  color: var(--stone-light);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-.overlay-stats {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-.overlay-stat { text-align: center; }
-.overlay-stat-val {
-  font-family: 'Cinzel', serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--gold-bright);
-  display: block;
-}
-.overlay-stat-label {
-  font-size: 0.78rem;
-  color: var(--stone-light);
-}
+.overlay h2 { font-size: 1.6rem; margin-bottom: 8px; }
+.overlay h2.win { color: var(--gold); }
+.overlay h2.lose { color: var(--red); }
+.overlay p { color: var(--text-dim); margin-bottom: 18px; }
+.overlay-stats { display: flex; justify-content: space-around; margin-bottom: 20px; }
+.overlay-stats div span { display: block; font-size: 0.78rem; color: var(--text-faint); }
+.overlay-stats div b { font-size: 1.3rem; color: var(--gold); }
 .overlay-btn {
-  padding: 12px 32px;
+  padding: 12px 28px;
+  background: var(--gold);
+  color: var(--bg);
   border: none;
   border-radius: 8px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
   cursor: pointer;
-  background: linear-gradient(135deg, rgba(184,134,11,0.4), rgba(184,134,11,0.2));
-  border: 1px solid rgba(184,134,11,0.6);
-  color: var(--gold-light);
-  transition: all 0.2s;
-}
-.overlay-btn:hover {
-  background: linear-gradient(135deg, rgba(184,134,11,0.6), rgba(184,134,11,0.4));
+  font-family: inherit;
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 620px) {
-  .stats { grid-template-columns: repeat(3, 1fr); }
-  .actions { grid-template-columns: 1fr; }
-  .bottom-row { grid-template-columns: 1fr; }
-  .end-turn-btn { padding: 14px; }
-  .header h1 { font-size: 2rem; }
+@media (max-width: 580px) {
+  .info-grid { grid-template-columns: 1fr 1fr; }
+  .goals-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
-<div id="game-overlay" class="overlay hidden">
+<div id="overlay" class="overlay hidden">
   <div class="overlay-box">
-    <span class="overlay-icon" id="ov-icon">🏆</span>
-    <div class="overlay-title" id="ov-title">Victory</div>
-    <div class="overlay-body" id="ov-body">Your kingdom has endured.</div>
+    <h2 id="ov-title" class="win">Victory!</h2>
+    <p id="ov-body"></p>
     <div class="overlay-stats">
-      <div class="overlay-stat"><span class="overlay-stat-val" id="ov-score">0</span><span class="overlay-stat-label">Kingdom Score</span></div>
-      <div class="overlay-stat"><span class="overlay-stat-val" id="ov-turns">0</span><span class="overlay-stat-label">Turns Survived</span></div>
-      <div class="overlay-stat"><span class="overlay-stat-val" id="ov-rank">—</span><span class="overlay-stat-label">Rank</span></div>
+      <div><b id="ov-score">0</b><span>Score</span></div>
+      <div><b id="ov-turns">0</b><span>Turns</span></div>
+      <div><b id="ov-rank">—</b><span>Rank</span></div>
     </div>
-    <button class="overlay-btn" onclick="resetGame()">Begin a New Reign</button>
+    <button class="overlay-btn" onclick="resetGame()">New Reign</button>
   </div>
 </div>
 
 <div class="game">
 
-  <div class="header">
-    <span class="crown">♛</span>
-    <h1>Feudal Lord</h1>
-    <div class="subtitle">Rule your realm with cunning and force</div>
+  <div class="topbar">
+    <div class="topbar-title">♛ Feudal Lord</div>
+    <div class="topbar-turn">Turn <b id="turn-num">1</b> of 30</div>
   </div>
 
-  <div class="turn-banner" id="turn-banner">TURN 1 OF 30</div>
-
-  <div class="score-bar">
-    <div>
-      <div class="score-label">Kingdom Score</div>
-      <div class="score-value" id="score-display">0</div>
+  <!-- TUTORIAL -->
+  <div class="tutorial" id="tutorial">
+    <div class="tutorial-icon">💡</div>
+    <div class="tutorial-body">
+      <span class="tutorial-step" id="tut-step">How to play</span>
+      <span id="tut-text"></span>
     </div>
-    <div class="progress-wrap">
-      <div class="progress-fill" id="score-progress" style="width:0%"></div>
-    </div>
-    <div class="score-rank" id="rank-display">Peasant Village</div>
+    <button class="tutorial-close" onclick="dismissTutorial()" title="Dismiss">×</button>
   </div>
 
-  <div class="objective-bar">
-    <div class="obj-title">VICTORY CONDITIONS</div>
-    <div class="obj-goals" id="obj-goals">
-      <div class="obj-goal" id="obj-1"><span class="chk"></span>5 Houses</div>
-      <div class="obj-goal" id="obj-2"><span class="chk"></span>3 Markets</div>
-      <div class="obj-goal" id="obj-3"><span class="chk"></span>5 Soldiers</div>
-      <div class="obj-goal" id="obj-4"><span class="chk"></span>300 Gold</div>
-    </div>
-    <div class="obj-turns" id="turns-remaining">29 turns left</div>
-  </div>
+  <!-- ============ INFO ZONE (read-only) ============ -->
+  <div class="section-label info-tag">what you see</div>
 
-  <div class="stats">
-    <div class="stat-card" id="sc-gold">
-      <span class="stat-icon">💰</span>
-      <span class="stat-label">Gold</span>
-      <span class="stat-value" id="gold">100</span>
-    </div>
-    <div class="stat-card" id="sc-houses">
-      <span class="stat-icon">🏠</span>
-      <span class="stat-label">Houses</span>
-      <span class="stat-value" id="houses">0</span>
-    </div>
-    <div class="stat-card" id="sc-markets">
-      <span class="stat-icon">🛒</span>
-      <span class="stat-label">Markets</span>
-      <span class="stat-value" id="markets">0</span>
-    </div>
-    <div class="stat-card" id="sc-soldiers">
-      <span class="stat-icon">⚔</span>
-      <span class="stat-label">Soldiers</span>
-      <span class="stat-value" id="soldiers">0</span>
-    </div>
-    <div class="stat-card" id="sc-population">
-      <span class="stat-icon">👥</span>
-      <span class="stat-label">Population</span>
-      <span class="stat-value" id="population">5</span>
-    </div>
-    <div class="stat-card" id="sc-income">
-      <span class="stat-icon">📜</span>
-      <span class="stat-label">Income</span>
-      <span class="stat-value" id="income">0</span>
-    </div>
-  </div>
-
-  <div class="actions">
-
-    <div class="action-card tooltip-wrap" id="ac-house">
-      <div class="tooltip">Each house shelters families, expanding your population by 2 and contributing 5 gold in taxes each turn. Prerequisite for soldier conscription and population growth.</div>
-      <div class="action-title"><span class="action-icon">🏠</span> Build House</div>
-      <div class="action-stats">
-        <div class="action-stat">Cost: <span id="house-cost-tag" class="cost-tag affordable">💰 20</span></div>
-        <div class="action-stat">Yields: <span>+5 gold/turn</span></div>
-        <div class="action-stat">Pop: <span>+2</span></div>
+  <div class="info-panel">
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="info-cell-label">💰 Treasury</div>
+        <div class="info-cell-value" id="gold">100</div>
       </div>
-      <button class="action-btn" id="btn-house" onclick="kingdom.buildHouse()">Construct</button>
-    </div>
-
-    <div class="action-card tooltip-wrap" id="ac-market">
-      <div class="tooltip">Markets attract merchants and traders, generating 12 gold in taxes per turn. Highest return-on-investment building with a ~3.3 turn break-even.</div>
-      <div class="action-title"><span class="action-icon">🛒</span> Build Market</div>
-      <div class="action-stats">
-        <div class="action-stat">Cost: <span id="market-cost-tag" class="cost-tag affordable">💰 40</span></div>
-        <div class="action-stat">Yields: <span>+12 gold/turn</span></div>
-        <div class="action-stat">Break-even: <span>~3.3 turns</span></div>
+      <div class="info-cell">
+        <div class="info-cell-label">📈 Income / turn</div>
+        <div class="info-cell-value" id="income">+0</div>
       </div>
-      <button class="action-btn" id="btn-market" onclick="kingdom.buildMarket()">Construct</button>
-    </div>
-
-    <div class="action-card tooltip-wrap" id="ac-soldier">
-      <div class="tooltip">Soldiers defend your realm. Without them, each turn carries a 50% invasion risk. A single soldier drops that risk to 25% and redirects damage away from your buildings.</div>
-      <div class="action-title"><span class="action-icon">⚔</span> Recruit Soldier</div>
-      <div class="action-stats">
-        <div class="action-stat">Cost: <span id="soldier-cost-tag" class="cost-tag affordable">💰 15</span></div>
-        <div class="action-stat">Effect: <span>−25% invasion chance</span></div>
-        <div class="action-stat">Invasion: <span id="invasion-pct">50%</span> risk</div>
-      </div>
-      <button class="action-btn" id="btn-soldier" onclick="kingdom.recruitSoldier()">Recruit</button>
-    </div>
-
-  </div>
-
-  <div class="bottom-row">
-    <div class="tech-panel">
-      <div class="tech-header">⚗ ADVANCEMENTS</div>
-      <div class="tech-grid" id="tech-grid">
-        <!-- populated by JS -->
+      <div class="info-cell">
+        <div class="info-cell-label">🔥 Invasion risk</div>
+        <div class="info-cell-value danger" id="invasion">50%</div>
       </div>
     </div>
-    <button class="end-turn-btn" id="btn-end-turn" onclick="kingdom.nextTurn()">
-      END<br>TURN
+    <div class="info-buildings">
+      <span>🏠 Houses: <b id="houses">0</b></span>
+      <span>🛒 Markets: <b id="markets">0</b></span>
+      <span>⚔️ Soldiers: <b id="soldiers">0</b></span>
+      <span>👥 Population: <b id="population">5</b></span>
+    </div>
+  </div>
+
+  <div class="goals-panel">
+    <div class="goals-grid">
+      <div class="goal" id="g-houses"><div class="goal-mark">✓</div><div class="goal-text">Have <b>5 houses</b></div><div class="goal-prog" id="p-houses">0/5</div></div>
+      <div class="goal" id="g-markets"><div class="goal-mark">✓</div><div class="goal-text">Have <b>3 markets</b></div><div class="goal-prog" id="p-markets">0/3</div></div>
+      <div class="goal" id="g-soldiers"><div class="goal-mark">✓</div><div class="goal-text">Have <b>5 soldiers</b></div><div class="goal-prog" id="p-soldiers">0/5</div></div>
+      <div class="goal" id="g-gold"><div class="goal-mark">✓</div><div class="goal-text">Have <b>300 gold</b></div><div class="goal-prog" id="p-gold">100/300</div></div>
+    </div>
+  </div>
+
+  <!-- ============ ACTION ZONE (editable) ============ -->
+  <div class="section-label action-tag">what you decide</div>
+
+  <div class="action-panel">
+    <div class="action-help">
+      Use <b>+</b> and <b>−</b> to pick how many of each. You can change your mind freely — nothing happens until you press the orange button below.
+    </div>
+
+    <div class="order">
+      <div class="order-info">
+        <div class="order-icon">🏠</div>
+        <div class="order-text">
+          <div class="order-name">Build Houses</div>
+          <div class="order-desc">Each one yields <b>+5 gold</b>/turn and +2 population</div>
+          <div class="order-price">20 gold each</div>
+        </div>
+      </div>
+      <div class="stepper">
+        <button onclick="kingdom.change('house',-1)">−</button>
+        <span class="count zero" id="o-house">0</span>
+        <button onclick="kingdom.change('house',+1)">+</button>
+      </div>
+    </div>
+
+    <div class="order">
+      <div class="order-info">
+        <div class="order-icon">🛒</div>
+        <div class="order-text">
+          <div class="order-name">Build Markets</div>
+          <div class="order-desc">Each one yields <b>+12 gold</b>/turn — best long-term income</div>
+          <div class="order-price">40 gold each</div>
+        </div>
+      </div>
+      <div class="stepper">
+        <button onclick="kingdom.change('market',-1)">−</button>
+        <span class="count zero" id="o-market">0</span>
+        <button onclick="kingdom.change('market',+1)">+</button>
+      </div>
+    </div>
+
+    <div class="order">
+      <div class="order-info">
+        <div class="order-icon">⚔️</div>
+        <div class="order-text">
+          <div class="order-name">Recruit Soldiers</div>
+          <div class="order-desc">Defend the realm. <b>Without soldiers</b> you can be invaded!</div>
+          <div class="order-price">15 gold each</div>
+        </div>
+      </div>
+      <div class="stepper">
+        <button onclick="kingdom.change('soldier',-1)">−</button>
+        <span class="count zero" id="o-soldier">0</span>
+        <button onclick="kingdom.change('soldier',+1)">+</button>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-title">If you confirm these orders:</div>
+      <div class="summary-lines" id="summary-lines"></div>
+    </div>
+
+    <button class="confirm-btn" id="btn-confirm" onclick="kingdom.confirmTurn()">
+      Confirm Orders &amp; Advance Turn
+      <small>after confirming, taxes are collected and time moves on</small>
     </button>
   </div>
 
-  <div class="log-header">CHRONICLE OF EVENTS</div>
-  <div class="log" id="log"></div>
+  <details class="advanced">
+    <summary>⚗️ Permanent upgrades (optional)</summary>
+    <div class="advanced-content" id="tech-list"></div>
+  </details>
+
+  <details class="log-wrap">
+    <summary>📜 Chronicle (event log)</summary>
+    <div class="log" id="log"></div>
+  </details>
 
 </div>
 
 <script>
 const TECHS = [
-  { id: 'fortifications', name: 'Fortifications', cost: 80, effect: 'Invasion chance halved', icon: '🛡',
-    tip: 'Stone walls and towers. Reduces invasion probability by half.',
-    apply: (k) => { k.fortified = true; } },
-  { id: 'trade_routes', name: 'Trade Routes', cost: 100, effect: 'Markets yield +5/turn', icon: '🗺',
-    tip: 'Expanded merchant networks. Each market now yields 17 gold/turn.',
-    apply: (k) => { k.marketBonus = 5; } },
-  { id: 'agriculture', name: 'Agriculture', cost: 60, effect: 'Pop grows faster', icon: '🌾',
-    tip: 'Improved crop rotation. Population can grow by up to 4 per turn.',
-    apply: (k) => { k.agriUpgrade = true; } },
-  { id: 'taxation', name: 'Royal Edicts', cost: 70, effect: 'Houses yield +3/turn', icon: '📜',
-    tip: 'Codified tax laws. Each house now yields 8 gold/turn.',
-    apply: (k) => { k.houseBonus = 3; } },
+  { id: 'fortifications', name: 'Fortifications', cost: 80, effect: 'Halves invasion risk',
+    apply: k => { k.fortified = true; } },
+{ id: 'trade_routes', name: 'Trade Routes', cost: 100, effect: 'Each market yields +5 gold/turn',
+    apply: k => { k.marketBonus = 5; } },
+  { id: 'agriculture', name: 'Agriculture', cost: 60, effect: 'Population grows faster',
+    apply: k => { k.agriUpgrade = true; } },
+  { id: 'taxation', name: 'Royal Edicts', cost: 70, effect: 'Each house yields +3 gold/turn',
+    apply: k => { k.houseBonus = 3; } },
+];
+
+const COSTS = { house: 20, market: 40, soldier: 15 };
+const NAMES = { house: 'house', market: 'market', soldier: 'soldier' };
+const NAMES_PL = { house: 'houses', market: 'markets', soldier: 'soldiers' };
+const ICONS = { house: '🏠', market: '🛒', soldier: '⚔️' };
+
+const TUTORIAL_STEPS = [
+  { step: 'Step 1 of 3', text: 'Each turn you give <b>orders</b> in the gold panel below. Use <b>+</b> and <b>−</b> to choose how many houses, markets, or soldiers to build. You have <b>100 gold</b> — try queuing 1 house and 1 soldier.' },
+  { step: 'Step 2 of 3', text: 'Check the <b>summary</b> just above the orange button — it shows what you\'ll spend and what your treasury will look like after the turn. When ready, press <b>Confirm Orders</b> to lock in your turn.' },
+  { step: 'Step 3 of 3', text: 'Each turn: your <b>houses and markets pay taxes</b>, <b>enemies may attack</b>, and time advances. You have 30 turns to reach all <b>4 goals</b> shown above.' },
 ];
 
 const PLAYER_ID = localStorage.getItem("player_id") || crypto.randomUUID();
 localStorage.setItem("player_id", PLAYER_ID);
 
 function sendGameData() {
-  const url =
-    "https://masterfloss.pythonanywhere.com/submit" +
+  const url = "https://masterfloss.pythonanywhere.com/submit" +
     "?player=" + encodeURIComponent(PLAYER_ID) +
     "&score=" + encodeURIComponent(kingdom.score) +
     "&turn=" + encodeURIComponent(kingdom.turn) +
@@ -748,38 +647,41 @@ function sendGameData() {
     "&soldiers=" + encodeURIComponent(kingdom.soldiers) +
     "&population=" + encodeURIComponent(kingdom.population) +
     "&rank=" + encodeURIComponent(kingdom.rank(kingdom.score));
-
   new Image().src = url;
 }
 
-
-
 class Kingdom {
-  constructor() {
-    this.reset();
-  }
+  constructor() { this.reset(); }
 
   reset() {
-    this.gold = 100;
-    this.houses = 0;
-    this.markets = 0;
-    this.soldiers = 0;
-    this.population = 5;
-    this.turn = 1;
-    this.maxTurns = 30;
-    this.gameOver = false;
-    this.fortified = false;
-    this.agriUpgrade = false;
-    this.marketBonus = 0;
-    this.houseBonus = 0;
+    this.gold = 100; this.houses = 0; this.markets = 0;
+    this.soldiers = 0; this.population = 5;
+    this.turn = 1; this.maxTurns = 30; this.gameOver = false;
+    this.fortified = false; this.agriUpgrade = false;
+    this.marketBonus = 0; this.houseBonus = 0;
     this.researchedTechs = new Set();
     this.score = 0;
-    this.renderTechTree();
+    this.orders = { house: 0, market: 0, soldier: 0 };
+    this.tutorialStep = 0;
+    this.tutorialDismissed = false;
+    this.renderTech();
     this.updateUI();
     document.getElementById('log').innerHTML = '';
-    this.log('♛ Your feudal kingdom begins. Build, defend, and endure for 30 turns to claim victory.', 'yellow');
-    document.getElementById('game-overlay').classList.add('hidden');
-    document.getElementById('btn-end-turn').disabled = false;
+    this.log('Your reign begins. You have 30 turns to forge a great kingdom.', 'gold');
+    document.getElementById('overlay').classList.add('hidden');
+    this.showTutorial();
+  }
+
+  showTutorial() {
+    const t = document.getElementById('tutorial');
+    if (this.tutorialDismissed || this.tutorialStep >= TUTORIAL_STEPS.length) {
+      t.classList.add('hidden');
+      return;
+    }
+    const s = TUTORIAL_STEPS[this.tutorialStep];
+    document.getElementById('tut-step').textContent = s.step;
+    document.getElementById('tut-text').innerHTML = s.text;
+    t.classList.remove('hidden');
   }
 
   get houseYield() { return 5 + this.houseBonus; }
@@ -789,14 +691,15 @@ class Kingdom {
     if (this.fortified) c *= 0.5;
     return c;
   }
+  get income() { return this.houses * this.houseYield + this.markets * this.marketYield; }
+  get orderCost() {
+    return this.orders.house * COSTS.house + this.orders.market * COSTS.market + this.orders.soldier * COSTS.soldier;
+  }
 
   computeScore() {
-    return (this.gold) +
-      (this.houses * 30) +
-      (this.markets * 60) +
-      (this.soldiers * 20) +
-      (this.population * 5) +
-      (this.researchedTechs.size * 50);
+    return this.gold + this.houses * 30 + this.markets * 60 +
+           this.soldiers * 20 + this.population * 5 +
+           this.researchedTechs.size * 50;
   }
 
   rank(score) {
@@ -810,248 +713,266 @@ class Kingdom {
     return 'Kingdom';
   }
 
+  change(type, delta) {
+    if (this.gameOver) return;
+    const newVal = this.orders[type] + delta;
+    if (newVal < 0) return;
+    const tentativeCost = this.orderCost + delta * COSTS[type];
+    if (tentativeCost > this.gold) {
+      this.flashSummary();
+      return;
+    }
+    this.orders[type] = newVal;
+    this.updateUI();
+  }
+
+  flashSummary() {
+    const s = document.querySelector('.summary');
+    s.style.borderColor = 'var(--red)';
+    setTimeout(() => s.style.borderColor = '', 400);
+  }
+
   updateUI() {
-    const prev = {
-      gold: +document.getElementById('gold').textContent,
-      houses: +document.getElementById('houses').textContent,
-      markets: +document.getElementById('markets').textContent,
-      soldiers: +document.getElementById('soldiers').textContent,
-      population: +document.getElementById('population').textContent,
-    };
-
-    const income = this.houses * this.houseYield + this.markets * this.marketYield;
-
+    // Info zone
     document.getElementById('gold').textContent = this.gold;
+    document.getElementById('income').textContent = '+' + this.income;
     document.getElementById('houses').textContent = this.houses;
     document.getElementById('markets').textContent = this.markets;
     document.getElementById('soldiers').textContent = this.soldiers;
     document.getElementById('population').textContent = this.population;
-    document.getElementById('income').textContent = '+' + income;
-    document.getElementById('turn-banner').textContent = `TURN ${this.turn} OF ${this.maxTurns}`;
-    document.getElementById('turns-remaining').textContent =
-      Math.max(0, this.maxTurns - this.turn + 1) + ' turns left';
+    document.getElementById('turn-num').textContent = this.turn;
 
-    // Invasion display
+    const invEl = document.getElementById('invasion');
     const invPct = Math.round(this.invasionBase * 100);
-    document.getElementById('invasion-pct').textContent = invPct + '%';
+    invEl.textContent = invPct + '%';
+    invEl.className = 'info-cell-value ' + (this.soldiers > 0 ? 'good' : 'danger');
 
-    // Score
+    // Goals
+    this.updateGoal('houses', 5);
+    this.updateGoal('markets', 3);
+    this.updateGoal('soldiers', 5);
+    this.updateGoal('gold', 300);
+
+    // Orders display
+    ['house','market','soldier'].forEach(t => {
+      const el = document.getElementById('o-' + t);
+      el.textContent = this.orders[t];
+      el.classList.toggle('zero', this.orders[t] === 0);
+    });
+
+    // Summary
+    this.renderSummary();
+
+    // Score (used by overlay)
     this.score = this.computeScore();
-    document.getElementById('score-display').textContent = this.score;
-    const maxScore = 4000;
-    const pct = Math.min(100, Math.round(this.score / maxScore * 100));
-    document.getElementById('score-progress').style.width = pct + '%';
-    document.getElementById('rank-display').textContent = this.rank(this.score);
 
-    // Flash changed stats
-    const fields = { gold: 'sc-gold', houses: 'sc-houses', markets: 'sc-markets', soldiers: 'sc-soldiers', population: 'sc-population' };
-    Object.keys(fields).forEach(k => {
-      const el = document.getElementById(fields[k]);
-      const val = this[k];
-      if (prev[k] !== val) {
-        el.classList.add('updated');
-        setTimeout(() => el.classList.remove('updated'), 800);
-        const valEl = document.getElementById(k);
-        valEl.classList.add(val > prev[k] ? 'gain' : 'loss');
-        setTimeout(() => valEl.classList.remove('gain', 'loss'), 800);
-      }
-    });
-
-    // Button affordability
-    this.updateButtons();
-
-    // Objectives
-    this.updateObjectives();
-  }
-
-  updateButtons() {
-    const costs = { house: 20, market: 40, soldier: 15 };
-    const btnIds = { house: 'btn-house', market: 'btn-market', soldier: 'btn-soldier' };
-    const cardIds = { house: 'ac-house', market: 'ac-market', soldier: 'ac-soldier' };
-    const tagIds = { house: 'house-cost-tag', market: 'market-cost-tag', soldier: 'soldier-cost-tag' };
-
-    Object.keys(costs).forEach(key => {
-      const can = this.gold >= costs[key] && !this.gameOver;
-      document.getElementById(btnIds[key]).disabled = !can;
-      const card = document.getElementById(cardIds[key]);
-      card.classList.toggle('disabled', !can);
-      const tag = document.getElementById(tagIds[key]);
-      tag.className = 'cost-tag ' + (can ? 'affordable' : 'unaffordable');
-    });
-
-    // Tech buttons
+    // Tech affordability (factor in pending orders)
     TECHS.forEach(tech => {
       const btn = document.getElementById('tech-' + tech.id);
       if (!btn || this.researchedTechs.has(tech.id)) return;
-      const can = this.gold >= tech.cost && !this.gameOver;
-      btn.disabled = !can;
+      btn.disabled = this.gold - this.orderCost < tech.cost || this.gameOver;
     });
   }
 
-  updateObjectives() {
-    const goals = [
-      { id: 'obj-1', met: this.houses >= 5, label: '5 Houses' },
-      { id: 'obj-2', met: this.markets >= 3, label: '3 Markets' },
-      { id: 'obj-3', met: this.soldiers >= 5, label: '5 Soldiers' },
-      { id: 'obj-4', met: this.gold >= 300, label: '300 Gold' },
-    ];
-    goals.forEach(g => {
-      const el = document.getElementById(g.id);
-      el.classList.toggle('done', g.met);
-      el.innerHTML = `<span class="chk">${g.met ? '✓' : ''}</span>${g.label}`;
-    });
+  updateGoal(key, target) {
+    const el = document.getElementById('g-' + key);
+    const prog = document.getElementById('p-' + key);
+    const current = this[key];
+    const done = current >= target;
+    el.classList.toggle('done', done);
+    prog.textContent = Math.min(current, target) + '/' + target;
   }
 
-  renderTechTree() {
-    const grid = document.getElementById('tech-grid');
-    grid.innerHTML = '';
+  renderSummary() {
+    const lines = document.getElementById('summary-lines');
+    const items = [];
+    ['house','market','soldier'].forEach(t => {
+      if (this.orders[t] > 0) {
+        const total = this.orders[t] * COSTS[t];
+        const label = this.orders[t] === 1 ? NAMES[t] : NAMES_PL[t];
+        items.push(`<div class="row"><span>${ICONS[t]} ${this.orders[t]} ${label}</span><b>−${total} 💰</b></div>`);
+      }
+    });
+
+    const goldAfterSpend = this.gold - this.orderCost;
+    const newHouses = this.houses + this.orders.house;
+    const newMarkets = this.markets + this.orders.market;
+    const newIncome = newHouses * this.houseYield + newMarkets * this.marketYield;
+    const goldAfterTurn = goldAfterSpend + newIncome;
+
+    if (items.length === 0) {
+      lines.innerHTML = `
+        <div class="row" style="color:var(--text-faint);font-style:italic"><span>No orders yet. You'll only collect taxes.</span><span></span></div>
+        <div class="row total"><span>Treasury after this turn:</span><b>${this.gold} + ${this.income} = ${this.gold + this.income} 💰</b></div>
+      `;
+    } else {
+      lines.innerHTML = items.join('') +
+        `<div class="row"><span>Total spending:</span><b>−${this.orderCost} 💰</b></div>
+         <div class="row"><span>Income after building:</span><b>+${newIncome} 💰</b></div>
+         <div class="row total"><span>Treasury after this turn:</span><b>${goldAfterTurn} 💰</b></div>`;
+    }
+
+    const btn = document.getElementById('btn-confirm');
+    btn.disabled = this.gameOver;
+    if (items.length === 0) {
+      btn.querySelector('small').textContent = 'no orders — you\'ll only collect taxes';
+    } else {
+      const total = this.orders.house + this.orders.market + this.orders.soldier;
+      btn.querySelector('small').textContent = `execute ${total} order${total > 1 ? 's' : ''} and advance to turn ${this.turn + 1}`;
+    }
+  }
+
+  renderTech() {
+    const list = document.getElementById('tech-list');
+    list.innerHTML = '';
     TECHS.forEach(tech => {
+      const done = this.researchedTechs.has(tech.id);
       const row = document.createElement('div');
-      row.className = 'tech-item';
-      const researched = this.researchedTechs.has(tech.id);
+      row.className = 'tech-row';
       row.innerHTML = `
-        <button id="tech-${tech.id}" class="tech-btn ${researched ? 'researched' : ''}"
-          onclick="kingdom.research('${tech.id}')" ${researched ? 'disabled' : ''}>
-          <span>${tech.icon} ${tech.name}</span>
-          <span class="tech-cost">${researched ? '✓ Researched' : '💰 ' + tech.cost}</span>
-        </button>`;
-      row.querySelector('button').title = tech.tip;
-      grid.appendChild(row);
+        <div class="tech-info">
+          <div class="t-name">${tech.name}</div>
+          <div class="t-eff">${tech.effect}</div>
+        </div>
+        <button id="tech-${tech.id}" class="tech-btn ${done ? 'done' : ''}"
+          ${done ? 'disabled' : ''} onclick="kingdom.research('${tech.id}')">
+          ${done ? '✓ Researched' : '💰 ' + tech.cost}
+        </button>
+      `;
+      list.appendChild(row);
     });
   }
 
   research(techId) {
     const tech = TECHS.find(t => t.id === techId);
-    if (!tech || this.researchedTechs.has(techId) || this.gold < tech.cost) return;
+    if (!tech || this.researchedTechs.has(techId)) return;
+    if (this.gold - this.orderCost < tech.cost) return;
     this.gold -= tech.cost;
     this.researchedTechs.add(techId);
     tech.apply(this);
-    this.log(`${tech.icon} Advancement unlocked: ${tech.name}. ${tech.effect}.`, 'blue');
-    this.renderTechTree();
+    this.log(`⚗️ Unlocked: ${tech.name}. ${tech.effect}.`, 'blue');
+    this.renderTech();
     this.updateUI();
   }
 
   log(message, css = '') {
     const logEl = document.getElementById('log');
     const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `<span class="log-turn">T${this.turn}</span><span class="log-text ${css}">${message}</span>`;
+    entry.className = 'log-entry ' + css;
+    entry.innerHTML = `<b>T${this.turn}</b>${message}`;
     logEl.appendChild(entry);
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  buildHouse() {
-    if (this.gold < 20) { this.log('Insufficient gold to build a house.', 'red'); return; }
-    this.gold -= 20;
-    this.houses++;
-    this.population += 2;
-    this.log('🏠 A new house was built. Population increases.', 'green');
-    this.updateUI();
-  }
-
-  buildMarket() {
-    if (this.gold < 40) { this.log('Insufficient gold to build a market.', 'red'); return; }
-    this.gold -= 40;
-    this.markets++;
-    this.log('🛒 A market opened in your lands. Trade flourishes.', 'green');
-    this.updateUI();
-  }
-
-  recruitSoldier() {
-    if (this.gold < 15) { this.log('Insufficient gold to recruit a soldier.', 'red'); return; }
-    this.gold -= 15;
-    this.soldiers++;
-    this.log('⚔ A soldier joined your army. The realm grows safer.', 'green');
-    this.updateUI();
-  }
-
-  collectTaxes() {
-    const income = this.houses * this.houseYield + this.markets * this.marketYield;
-    this.gold += income;
-    if (income > 0) {
-      this.log(`💰 Tax collection: +${income} gold (${this.houses} houses × ${this.houseYield} + ${this.markets} markets × ${this.marketYield}).`, 'yellow');
-    } else {
-      this.log('💰 No income this turn — build houses and markets to generate taxes.', '');
-    }
-  }
-
-  invasionCheck() {
-    const roll = Math.random();
-    const chance = this.invasionBase;
-
-    if (this.soldiers <= 0) {
-      if (roll < chance) {
-        const destroyedHouses = Math.min(this.houses, Math.floor(Math.random() * 2) + 1);
-        const destroyedMarkets = Math.min(this.markets, Math.floor(Math.random() * 2));
-        this.houses = Math.max(0, this.houses - destroyedHouses);
-        this.markets = Math.max(0, this.markets - destroyedMarkets);
-        this.log(`🔥 Enemy forces ransacked your lands! ${destroyedHouses} house(s) and ${destroyedMarkets} market(s) destroyed. Recruit soldiers to defend the realm.`, 'red');
-        if (this.houses === 0 && this.markets === 0 && this.turn < this.maxTurns) {
-          this.log('☠ Your kingdom has been reduced to ashes. All production has ceased.', 'red');
-        }
-      } else {
-        this.log('👀 Neighboring lords eye your undefended lands. Recruit soldiers before it is too late.', 'yellow');
-      }
-    } else {
-      if (roll < chance) {
-        const lostSoldiers = Math.min(this.soldiers, Math.floor(Math.random() * 2) + 1);
-        this.soldiers = Math.max(0, this.soldiers - lostSoldiers);
-        this.log(`⚔ Your soldiers repelled an attack! ${lostSoldiers} soldier(s) fell in defense of the realm.`, 'yellow');
-      } else {
-        this.log('🛡 Peace holds. Your soldiers patrol the borders.', 'green');
-      }
-    }
-  }
-
-  populationGrowth() {
-    if (this.population > 0 && this.houses > 0) {
-      const maxGrowth = this.agriUpgrade ? 4 : 2;
-      const growth = Math.floor(Math.random() * (maxGrowth + 1));
-      this.population += growth;
-      if (growth > 0) this.log(`👥 Population grew by ${growth}. The kingdom prospers.`, 'green');
-    }
-  }
-
-  checkVictory() {
-    const allGoalsMet = this.houses >= 5 && this.markets >= 3 && this.soldiers >= 5 && this.gold >= 300;
-    if (this.turn >= this.maxTurns || allGoalsMet) {
-      this.gameOver = true;
-      document.getElementById('btn-end-turn').disabled = true;
-
-      const victory = allGoalsMet || (this.turn >= this.maxTurns && (this.houses > 0 || this.markets > 0));
-      const score = this.computeScore();
-      const rnk = this.rank(score);
-
-      document.getElementById('ov-icon').textContent = victory ? '🏆' : '☠';
-      document.getElementById('ov-title').textContent = victory ? 'Victory!' : 'The Kingdom Falls';
-      document.getElementById('ov-title').className = 'overlay-title ' + (victory ? 'victory' : 'defeat');
-      document.getElementById('ov-body').textContent = victory
-        ? `Your reign of ${this.turn} turns has forged a great kingdom. The people celebrate your rule.`
-        : `After ${this.turn} turns your realm could not endure the pressures of the age.`;
-      document.getElementById('ov-score').textContent = score;
-      document.getElementById('ov-turns').textContent = this.turn;
-      document.getElementById('ov-rank').textContent = rnk;
-      document.getElementById('game-overlay').classList.remove('hidden');
-      return true;
-    }
-    return false;
-  }
-
-  nextTurn() {
+  confirmTurn() {
     if (this.gameOver) return;
+
+    // Execute orders
+    const o = this.orders;
+    const totalOrders = o.house + o.market + o.soldier;
+    if (totalOrders > 0) {
+      this.gold -= this.orderCost;
+      this.houses += o.house;
+      this.markets += o.market;
+      this.soldiers += o.soldier;
+      this.population += o.house * 2;
+      const parts = [];
+      if (o.house) parts.push(`${o.house} ${o.house === 1 ? 'house' : 'houses'}`);
+      if (o.market) parts.push(`${o.market} ${o.market === 1 ? 'market' : 'markets'}`);
+      if (o.soldier) parts.push(`${o.soldier} ${o.soldier === 1 ? 'soldier' : 'soldiers'}`);
+      this.log(`Orders executed: ${parts.join(', ')}. Spent ${this.orderCost} gold.`, 'gold');
+    }
+
+    // Reset orders for next turn
+    this.orders = { house: 0, market: 0, soldier: 0 };
+
+    // Advance turn
     this.turn++;
     this.collectTaxes();
     this.invasionCheck();
     this.populationGrowth();
 
-    if (this.gold < 0) {
-      this.log('💸 Your treasury is bankrupt. Gold is negative — consolidate your holdings.', 'red');
+    if (this.gold < 0) this.log('💸 The treasury is in deficit!', 'red');
+
+    // Advance tutorial
+    if (!this.tutorialDismissed && this.tutorialStep < TUTORIAL_STEPS.length) {
+      this.tutorialStep++;
+      this.showTutorial();
     }
 
     if (this.checkVictory()) return;
     this.updateUI();
     sendGameData();
   }
+
+  collectTaxes() {
+    const inc = this.income;
+    this.gold += inc;
+    if (inc > 0) {
+      this.log(`💰 Taxes collected: +${inc} gold (${this.houses} houses + ${this.markets} markets).`, 'green');
+    } else {
+      this.log('No income this turn — build houses or markets to earn gold.', '');
+    }
+  }
+
+  invasionCheck() {
+    const roll = Math.random();
+    const chance = this.invasionBase;
+    if (this.soldiers <= 0) {
+      if (roll < chance) {
+        const dH = Math.min(this.houses, Math.floor(Math.random() * 2) + 1);
+        const dM = Math.min(this.markets, Math.floor(Math.random() * 2));
+        this.houses = Math.max(0, this.houses - dH);
+        this.markets = Math.max(0, this.markets - dM);
+        this.log(`🔥 INVASION! Lost ${dH} house(s) and ${dM} market(s). Recruit soldiers!`, 'red');
+      } else {
+        this.log('👀 Enemies eye your undefended lands...', '');
+      }
+    } else {
+      if (roll < chance) {
+        const lost = Math.min(this.soldiers, Math.floor(Math.random() * 2) + 1);
+        this.soldiers = Math.max(0, this.soldiers - lost);
+        this.log(`⚔️ Attack repelled! ${lost} soldier(s) fell defending the realm.`, 'gold');
+      } else {
+        this.log('🛡️ Peace holds. Your soldiers patrol the borders.', 'green');
+      }
+    }
+  }
+
+  populationGrowth() {
+    if (this.population > 0 && this.houses > 0) {
+      const max = this.agriUpgrade ? 4 : 2;
+      const g = Math.floor(Math.random() * (max + 1));
+      this.population += g;
+      if (g > 0) this.log(`👥 Population grew by ${g}.`, '');
+    }
+  }
+
+  checkVictory() {
+    const allGoalsMet = this.houses >= 5 && this.markets >= 3 && this.soldiers >= 5 && this.gold >= 300;
+    if (this.turn > this.maxTurns || allGoalsMet) {
+      this.gameOver = true;
+      const victory = allGoalsMet || (this.turn > this.maxTurns && (this.houses > 0 || this.markets > 0));
+      const score = this.computeScore();
+      document.getElementById('ov-title').textContent = victory ? '🏆 Victory!' : '☠ The Kingdom Falls';
+      document.getElementById('ov-title').className = victory ? 'win' : 'lose';
+      document.getElementById('ov-body').textContent = victory
+        ? `After ${this.turn - 1} turns, you forged a great kingdom. The people celebrate your reign.`
+        : `After ${this.turn - 1} turns, your realm could not endure.`;
+      document.getElementById('ov-score').textContent = score;
+      document.getElementById('ov-turns').textContent = this.turn - 1;
+      document.getElementById('ov-rank').textContent = this.rank(score);
+      document.getElementById('overlay').classList.remove('hidden');
+      sendGameData();
+      return true;
+    }
+    return false;
+  }
+}
+
+function dismissTutorial() {
+  kingdom.tutorialDismissed = true;
+  document.getElementById('tutorial').classList.add('hidden');
 }
 
 const kingdom = new Kingdom();
